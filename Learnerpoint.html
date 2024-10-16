@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All-in-One Learning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+    <header class="bg-blue-600 text-white p-4 sticky top-0 z-50">
+        <div class="container mx-auto">
+            <div class="flex items-center justify-between">
+                <a href="#" class="flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                    </svg>
+                    <span class="text-xl font-bold">All-in-One Learning</span>
+                </a>
+                <nav class="space-x-4">
+                    <button class="px-4 py-2 rounded-md bg-white text-blue-600 font-medium" onclick="changeSection('free-resources')">Free Resources</button>
+                    <button class="px-4 py-2 rounded-md bg-blue-500 text-white font-medium" onclick="changeSection('cybersecurity-ai')">Cybersecurity & AI</button>
+                    <button class="px-4 py-2 rounded-md bg-blue-500 text-white font-medium" onclick="changeSection('cp-gsoc')">CP & GSoC</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto p-4">
+        <div id="free-resources" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3"></div>
+        <div id="learning-paths" class="hidden">
+            <div class="mb-4 flex justify-center space-x-4" id="path-buttons"></div>
+            <div class="mb-4 bg-gray-200 h-2 rounded-full overflow-hidden">
+                <div id="progress-bar" class="bg-blue-600 h-full transition-all duration-300 ease-in-out" style="width: 0%"></div>
+            </div>
+            <div id="path-nodes" class="grid gap-6 md:grid-cols-3 lg:grid-cols-4"></div>
+            <div id="node-details" class="mt-8 bg-white rounded-lg shadow-md p-6">
+                <h2 id="node-title" class="text-2xl font-bold mb-2"></h2>
+                <p id="node-description" class="text-gray-600 mb-4"></p>
+                <h3 class="text-lg font-semibold mb-2">Resources:</h3>
+                <ul id="resource-list" class="list-disc pl-5 space-y-2"></ul>
+                <div class="flex justify-between mt-6">
+                    <button id="prev-btn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md font-medium" onclick="handlePrev()">Previous</button>
+                    <button id="complete-btn" class="px-4 py-2 bg-green-500 text-white rounded-md font-medium" onclick="handleComplete()">Mark as Complete</button>
+                    <button id="next-btn" class="px-4 py-2 bg-blue-600 text-white rounded-md font-medium" onclick="handleNext()">Next</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-gray-200 text-gray-600 p-4 mt-8">
+        <div class="container mx-auto text-center">
+            <p>&copy; <span id="current-year"></span> Adarsh-code169. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const freeResources = [
+            {
+                title: "Google Summer of Code (GSoC)",
+                description: "GSoC is a global program that offers student developers stipends to write code for open source projects.",
+                resources: [
+                    { name: "Official GSoC Website", url: "https://summerofcode.withgoogle.com/how-it-works" },
+                    { name: "GSoC Student Guide", url: "https://google.github.io/gsocguides/student/" },
+                    { name: "Open Source Guide", url: "https://opensource.guide/" },
+                    { name: "FreeCodeCamp GSoC Guide", url: "https://www.freecodecamp.org/news/google-summer-of-code-guide/" }
+                ]
+            },
+            {
+                title: "MLH Fellowship",
+                description: "The MLH Fellowship is a 12-week internship alternative for aspiring technologists.",
+                resources: [
+                    { name: "Official MLH Fellowship Website", url: "https://fellowship.mlh.io/" },
+                    { name: "MLH Fellowship GitHub", url: "https://github.com/MLH-Fellowship" },
+                    { name: "MLH Prep Program", url: "https://mlh.io/prep" },
+                    { name: "MLH Hackathon Organizer Guide", url: "https://hackp.ac/handbook" }
+                ]
+            },
+            {
+                title: "Hacktoberfest",
+                description: "Hacktoberfest is a month-long celebration of open source software run by DigitalOcean.",
+                resources: [
+                    { name: "Official Hacktoberfest Website", url: "https://hacktoberfest.digitalocean.com/" },
+                    { name: "Hacktoberfest GitHub Topics", url: "https://github.com/topics/hacktoberfest" },
+                    { name: "DigitalOcean Open Source Introduction", url: "https://www.digitalocean.com/community/tutorial_series/an-introduction-to-open-source" },
+                    { name: "How to Contribute to Open Source", url: "https://opensource.guide/how-to-contribute/" }
+                ]
+            }
+        ];
+
+        const cybersecurityPath = [
+            {
+                title: "Introduction to Computer Networks",
+                description: "Learn about OSI model, TCP/IP, and basic networking concepts.",
+                resources: [
+                    { name: "Networking Fundamentals", url: "https://www.coursera.org/learn/computer-networking" },
+                    { name: "TCP/IP Guide", url: "http://www.tcpipguide.com/" }
+                ]
+            },
+            {
+                title: "Fundamentals of Information Security",
+                description: "Understand CIA triad, security policies, and risk management.",
+                resources: [
+                    { name: "Information Security Basics", url: "https://www.cybrary.it/course/intro-to-infosec/" },
+                    { name: "NIST Cybersecurity Framework", url: "https://www.nist.gov/cyberframework" }
+                ]
+            },
+            {
+                title: "Cryptography and Network Security",
+                description: "Study encryption algorithms, digital signatures, and secure protocols.",
+                resources: [
+                    { name: "Cryptography I", url: "https://www.coursera.org/learn/crypto" },
+                    { name: "Practical Cryptography", url: "https://www.practicalnetworking.net/series/cryptography/cryptography-basics/" }
+                ]
+            }
+        ];
+
+        const aiPath = [
+            {
+                title: "Introduction to Programming",
+                description: "Learn fundamental programming concepts and a language like Python.",
+                resources: [
+                    { name: "Python for Everybody", url: "https://www.py4e.com/" },
+                    { name: "Codecademy Python Course", url: "https://www.codecademy.com/learn/learn-python-3" }
+                ]
+            },
+            {
+                title: "Data Structures and Algorithms",
+                description: "Study essential data structures and algorithm design techniques.",
+                resources: [
+                    { name: "Algorithms Specialization", url: "https://www.coursera.org/specializations/algorithms" },
+                    { name: "LeetCode", url: "https://leetcode.com/" }
+                ]
+            },
+            {
+                title: "Machine Learning Fundamentals",
+                description: "Understand basic ML algorithms, supervised and unsupervised learning.",
+                resources: [
+                    { name: "Machine Learning by Andrew Ng", url: "https://www.coursera.org/learn/machine-learning" },
+                    { name: "Scikit-Learn Documentation", url: "https://scikit-learn.org/stable/" }
+                ]
+            }
+        ];
+
+        const competitiveProgrammingPath = [
+            {
+                title: "Basic Programming Concepts",
+                description: "Learn fundamental programming concepts and a language like C++ or Java.",
+                resources: [
+                    { name: "C++ Tutorial", url: "https://www.learncpp.com/" },
+                    { name: "Java Programming", url: "https://java-programming.mooc.fi/" }
+                ]
+            },
+            {
+                title: "Data Structures",
+                description: "Master essential data structures like arrays, linked lists, trees, and graphs.",
+                resources: [
+                    { name: "Data Structures Course", url: "https://www.coursera.org/learn/data-structures" },
+                    { name: "GeeksforGeeks DS", url: "https://www.geeksforgeeks.org/data-structures/" }
+                ]
+            },
+            {
+                title: "Algorithms",
+                description: "Study sorting, searching, dynamic programming, and graph algorithms.",
+                resources: [
+                    { name: "Introduction to Algorithms", url: "https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/" },
+                    { name: "Algorithms Specialization", url: "https://www.coursera.org/specializations/algorithms" }
+                ]
+            }
+        ];
+
+        const gsocRoadmap = [
+            {
+                title: "Understand Open Source",
+                description: "Learn about open source software, licenses, and contribution processes.",
+                resources: [
+                    { name: "Open Source Guide", url: "https://opensource.guide/" },
+                    { name: "Choose a License", url: "https://choosealicense.com/" }
+                ]
+            },
+            {
+                title: "Select Programming Languages",
+                description: "Choose and master programming languages relevant to your interests and potential projects.",
+                resources: [
+                    { name: "GitHub Trending", url: "https://github.com/trending" },
+                    { name: "TIOBE Index", url: "https://www.tiobe.com/tiobe-index/" }
+                ]
+            },
+            {
+                title: "Contribute to Open Source",
+                description: "Start contributing to open source projects to gain experience and build your profile.",
+                resources: [
+                    { name: "First Contributions", url: "https://github.com/firstcontributions/first-contributions" },
+                    { name: "Good First Issues", url: "https://goodfirstissues.com/" }
+                ]
+            }
+        ];
+
+        let activeSection = 'free-resources';
+        let activePath = cybersecurityPath;
+        let currentStep = 0;
+        let completedSteps = new Set();
+
+        function changeSection(section) {
+            activeSection = section;
+            document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('bg-white', 'text-blue-600'));
+            document.querySelector(`button[onclick="changeSection('${section}')"]`).classList.add('bg-white', 'text-blue-600');
+            
+            if (section === 'free-resources') {
+                document.getElementById('free-resources').classList.remove('hidden');
+                document.getElementById('learning-paths').classList.add('hidden');
+            } else {
+                document.getElementById('free-resources').classList.add('hidden');
+                document.getElementById('learning-paths').classList.remove('hidden');
+                if (section === 'cybersecurity-ai') {
+                    setActivePath(cybersecurityPath);
+                    updatePathButtons(['Cybersecurity', 'Artificial Intelligence']);
+                } else {
+                    setActivePath(competitiveProgrammingPath);
+                    updatePathButtons(['Competitive Programming', 'GSoC']);
+                }
+            }
+        }
+
+        function setActivePath(path) {
+            activePath = path;
+            currentStep = 0;
+            completedSteps = new Set();
+            updateUI();
+        }
+
+        function updatePathButtons(labels) {
+            const pathButtons = document.getElementById('path-buttons');
+            pathButtons.innerHTML = '';
+            labels.forEach((label, index) => {
+                const button = document.createElement('button');
+                button.textContent = label;
+                button.className = 'px-4 py-2 rounded-md bg-blue-500 text-white font-medium';
+                button.onclick = () => {
+                    if (index === 0) {
+                        setActivePath(activeSection === 'cybersecurity-ai' ? cybersecurityPath : competitiveProgrammingPath);
+                    } else {
+                        setActivePath(activeSection === 'cybersecurity-ai' ? aiPath : gsocRoadmap);
+                    }
+                };
+                pathButtons.appendChild(button);
+            });
+        }
+
+        function updateUI() {
+            const pathNodes = document.getElementById('path-nodes');
+            pathNodes.innerHTML = '';
+            activePath.forEach((node, index) => {
+                const nodeElement = document.createElement('div');
+                nodeElement.className = `p-4 bg-white rounded-lg shadow-md cursor-pointer transition-transform hover:scale-105 ${index === currentStep ? 'ring-2 ring-blue-600' : ''} ${completedSteps.has(index) ? 'bg-green-100' : ''}`;
+                nodeElement.textContent = node.title;
+                nodeElement.onclick = () => {
+                    currentStep = index;
+                    updateUI();
+                };
+                pathNodes.appendChild(nodeElement);
+            });
+
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = `${(completedSteps.size / activePath.length) * 100}%`;
+
+            updateNodeDetails();
+        }
+
+        function updateNodeDetails() {
+            const node = activePath[currentStep];
+            document.getElementById('node-title').textContent = node.title;
+            document.getElementById('node-description').textContent = node.description;
+            const resourceList = document.getElementById('resource-list');
+            resourceList.innerHTML = '';
+            node.resources.forEach(resource => {
+                const li = document.createElement('li');
+                const a =   document.createElement('a');
+                a.href = resource.url;
+                a.textContent = resource.name;
+                a.className = 'text-blue-600 hover:underline';
+                a.target = '_blank';
+                li.appendChild(a);
+                resourceList.appendChild(li);
+            });
+
+            document.getElementById('prev-btn').disabled = currentStep === 0;
+            document.getElementById('next-btn').disabled = currentStep === activePath.length - 1;
+        }
+
+        function handlePrev() {
+            if (currentStep > 0) {
+                currentStep--;
+                updateUI();
+            }
+        }
+
+        function handleNext() {
+            if (currentStep < activePath.length - 1) {
+                currentStep++;
+                updateUI();
+            }
+        }
+
+        function handleComplete() {
+            completedSteps.add(currentStep);
+            updateUI();
+        }
+
+        // Initialize free resources
+        const freeResourcesContainer = document.getElementById('free-resources');
+        freeResources.forEach(resource => {
+            const card = document.createElement('div');
+            card.className = 'bg-white rounded-lg shadow-md p-6';
+            card.innerHTML = `
+                <h2 class="text-xl font-bold mb-2">${resource.title}</h2>
+                <p class="text-gray-600 mb-4">${resource.description}</p>
+                <h3 class="font-semibold mb-2">Resources:</h3>
+                <ul class="list-disc pl-5 space-y-1">
+                    ${resource.resources.map(link => `
+                        <li><a href="${link.url}" class="text-blue-600 hover:underline" target="_blank">${link.name}</a></li>
+                    `).join('')}
+                </ul>
+            `;
+            freeResourcesContainer.appendChild(card);
+        });
+
+        // Set current year in footer
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        // Initialize UI
+        changeSection('free-resources');
+    </script>
+</body>
+</html>
